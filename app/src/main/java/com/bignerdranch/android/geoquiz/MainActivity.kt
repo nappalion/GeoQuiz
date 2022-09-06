@@ -30,11 +30,14 @@ class MainActivity : AppCompatActivity() {
         Question(R.string.question_asia, true))
 
     private var currentIndex = 0
+    private var questionsAnswered = mutableListOf<Boolean>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         Log.d(TAG, "onCreate(Bundle?) called")
+
+        questionBank.forEach{ _ -> questionsAnswered += false }
 
         trueButton = findViewById(R.id.true_button)
         falseButton = findViewById(R.id.false_button)
@@ -42,6 +45,7 @@ class MainActivity : AppCompatActivity() {
         prevButton = findViewById(R.id.prev_button)
         questionTextView = findViewById(R.id.question_text_view)
 
+        updateAnswerButtons()
 
         questionTextView.setOnClickListener { view: View ->
             changeQuestionIndex()
@@ -50,20 +54,26 @@ class MainActivity : AppCompatActivity() {
 
         trueButton.setOnClickListener { view: View ->
             checkAnswer(true)
+            questionsAnswered[currentIndex] = true
+            updateAnswerButtons()
         }
 
         falseButton.setOnClickListener { view: View ->
             checkAnswer(false)
+            questionsAnswered[currentIndex] = true
+            updateAnswerButtons()
         }
 
         nextButton.setOnClickListener {
             changeQuestionIndex()
             updateQuestion()
+            updateAnswerButtons()
         }
 
         prevButton.setOnClickListener {
             changeQuestionIndex(false)
             updateQuestion()
+            updateAnswerButtons()
         }
 
         updateQuestion()
@@ -88,6 +98,24 @@ class MainActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         Log.d(TAG, "onDestroy() called")
+    }
+
+    private fun updateAnswerButtons() {
+        if (!questionsAnswered[currentIndex]) {
+            enableAnswerButtons()
+        } else {
+            disableAnswerButtons()
+        }
+    }
+
+    private fun disableAnswerButtons() {
+        trueButton.isEnabled = false
+        falseButton.isEnabled = false
+    }
+
+    private fun enableAnswerButtons() {
+        trueButton.isEnabled = true
+        falseButton.isEnabled = true
     }
 
     private fun updateQuestion() {
