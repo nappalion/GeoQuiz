@@ -31,6 +31,7 @@ class MainActivity : AppCompatActivity() {
 
     private var currentIndex = 0
     private var questionsAnswered = mutableListOf<Boolean>()
+    private var questionsCorrect = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -106,6 +107,11 @@ class MainActivity : AppCompatActivity() {
         } else {
             disableAnswerButtons()
         }
+
+        Log.d("status", String.format("%.2f", questionsCorrect.toDouble() / questionBank.size * 100.0))
+        if (questionsAnswered.all { it }) {
+            Toast.makeText(this, getString(R.string.score_text) + String.format("%.2f", questionsCorrect.toDouble() / questionBank.size * 100.0) + "%", Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun disableAnswerButtons() {
@@ -131,6 +137,7 @@ class MainActivity : AppCompatActivity() {
     private fun checkAnswer(userAnswer: Boolean) {
         val correctAnswer = questionBank[currentIndex].answer
 
+        if (userAnswer == correctAnswer) questionsCorrect += 1
         val messageResId = if (userAnswer == correctAnswer) {
             R.string.correct_toast
         } else {
