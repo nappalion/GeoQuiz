@@ -49,8 +49,8 @@ class MainActivity : AppCompatActivity() {
         val currentIndex = savedInstanceState?.get(KEY_INDEX) ?: 0
         quizViewModel.setCurrentIndex(currentIndex as Int)
 
-//        val isCheater = (savedInstanceState?.get(KEY_CHEATER) ?: listOf(false))
-//        quizViewModel.isCheater = isCheater
+        val isCheater = (savedInstanceState?.get(KEY_CHEATER) ?: false)
+        quizViewModel.isCheater[currentIndex] = isCheater as Boolean
 
         trueButton = findViewById(R.id.true_button)
         falseButton = findViewById(R.id.false_button)
