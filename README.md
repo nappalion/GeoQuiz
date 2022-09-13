@@ -8,7 +8,7 @@ A project created for CS4750. GeoQuiz tests the user's knowledge of geography. T
   - [x] Chapter 2
   - [x] Chapter 3
   - [x] Chapter 4
-  - [ ] Chapter 6
+  - [x] Chapter 6
 
 
 ## Challenges
