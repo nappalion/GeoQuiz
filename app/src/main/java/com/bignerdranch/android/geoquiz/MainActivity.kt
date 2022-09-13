@@ -9,6 +9,11 @@ import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
+
+
+private const val KEY_INDEX = "index"
 
 class MainActivity : AppCompatActivity() {
 
@@ -20,25 +25,15 @@ class MainActivity : AppCompatActivity() {
 
     private val TAG = "MainActivity"
 
-
-    private val questionBank = listOf(
-        Question(R.string.question_australia, true),
-        Question(R.string.question_oceans, true),
-        Question(R.string.question_mideast, false),
-        Question(R.string.question_africa, false),
-        Question(R.string.question_americas, true),
-        Question(R.string.question_asia, true))
-
-    private var currentIndex = 0
-    private var questionsAnswered = mutableListOf<Boolean>()
-    private var questionsCorrect = 0
+    private val quizViewModel: QuizViewModel by lazy { ViewModelProvider(this)[QuizViewModel::class.java] }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         Log.d(TAG, "onCreate(Bundle?) called")
 
-        questionBank.forEach{ _ -> questionsAnswered += false }
+        val currentIndex = savedInstanceState?.get(KEY_INDEX) ?: 0
+        quizViewModel.setCurrentIndex(currentIndex as Int)
 
         trueButton = findViewById(R.id.true_button)
         falseButton = findViewById(R.id.false_button)
@@ -55,13 +50,13 @@ class MainActivity : AppCompatActivity() {
 
         trueButton.setOnClickListener { view: View ->
             checkAnswer(true)
-            questionsAnswered[currentIndex] = true
+            quizViewModel.updateButtonStatus(true)
             updateAnswerButtons()
         }
 
         falseButton.setOnClickListener { view: View ->
             checkAnswer(false)
-            questionsAnswered[currentIndex] = true
+            quizViewModel.updateButtonStatus(true)
             updateAnswerButtons()
         }
 
@@ -78,6 +73,13 @@ class MainActivity : AppCompatActivity() {
         }
 
         updateQuestion()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        Log.i(TAG, "onSaveInstanceState")
+        outState.putInt(KEY_INDEX, quizViewModel.getIndex)
+
     }
 
     override fun onStart() {
@@ -102,15 +104,18 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateAnswerButtons() {
-        if (!questionsAnswered[currentIndex]) {
+        if (!quizViewModel.currentButtonStatus) {
             enableAnswerButtons()
         } else {
             disableAnswerButtons()
         }
 
-        Log.d("status", String.format("%.2f", questionsCorrect.toDouble() / questionBank.size * 100.0))
-        if (questionsAnswered.all { it }) {
-            Toast.makeText(this, getString(R.string.score_text) + String.format("%.2f", questionsCorrect.toDouble() / questionBank.size * 100.0) + "%", Toast.LENGTH_SHORT).show()
+        var questionsCorrect = quizViewModel.getQuestionsCorrect
+        var questionBankSize = quizViewModel.getQuestionBankSize
+        Log.d("status", String.format("%.2f", questionsCorrect.toDouble() / questionBankSize * 100.0))
+        if (quizViewModel.allQuestionsAnswered) {
+            Log.d("status", "hello")
+            Toast.makeText(this, getString(R.string.score_text) + String.format("%.2f", questionsCorrect.toDouble() / questionBankSize * 100.0) + "%", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -125,19 +130,21 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateQuestion() {
-        val questionTextResId = questionBank[currentIndex].textResId
+        val questionTextResId = quizViewModel.currentQuestionText
         questionTextView.setText(questionTextResId)
     }
 
     private fun changeQuestionIndex(goNext: Boolean = true) {
+        var currentIndex = quizViewModel.getIndex
+        var questionBankSize = quizViewModel.getQuestionBankSize
         var traverseIndex = if (goNext) currentIndex + 1 else currentIndex - 1
-        currentIndex = if (traverseIndex >= 0) (traverseIndex) % questionBank.size else (questionBank.size - (traverseIndex % questionBank.size) - 2)
+        quizViewModel.setCurrentIndex(if (traverseIndex >= 0) (traverseIndex) % questionBankSize else (questionBankSize - (traverseIndex % questionBankSize) - 2))
     }
 
     private fun checkAnswer(userAnswer: Boolean) {
-        val correctAnswer = questionBank[currentIndex].answer
+        val correctAnswer = quizViewModel.currentQuestionAnswer
 
-        if (userAnswer == correctAnswer) questionsCorrect += 1
+        if (userAnswer == correctAnswer) quizViewModel.updateQuestionsCorrect()
         val messageResId = if (userAnswer == correctAnswer) {
             R.string.correct_toast
         } else {
