@@ -19,6 +19,7 @@ class QuizViewModel : ViewModel() {
     private var currentIndex = 0
     private var questionsAnswered = mutableListOf<Boolean>()
     private var questionsCorrect = 0
+    var isCheater = false
 
     init {
         questionBank.forEach{ _ -> questionsAnswered += false }
