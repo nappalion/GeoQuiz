@@ -2,6 +2,8 @@
 
 A project created for CS4750. GeoQuiz tests the user's knowledge of geography. The user presses TRUE or FALSE to answer the question onscreen, and GeoQuiz provides instant feedback.
 
+<img src="https://i.imgur.com/lUiRZrv.gif" width="300"/>
+
 ## Required
 
   - [x] Chapter 1
