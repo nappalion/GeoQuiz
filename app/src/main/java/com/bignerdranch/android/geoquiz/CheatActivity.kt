@@ -5,8 +5,10 @@ import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.TextView
+import androidx.lifecycle.ViewModelProvider
 
 const val EXTRA_ANSWER_SHOWN = "com.bignerdranch,android.geoquiz.answer_show"
 private const val EXTRA_ANSWER_IS_TRUE = "com.bignerdranch,android.geoquiz.answer_is_true"
@@ -16,7 +18,6 @@ class CheatActivity : AppCompatActivity() {
     private lateinit var showAnswerButton: Button
 
     private var answerIsTrue = false
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,6 +33,7 @@ class CheatActivity : AppCompatActivity() {
                 else -> R.string.false_button
             }
             answerTextView.setText(answerText)
+
             setAnswerShownResult(true)
         }
     }

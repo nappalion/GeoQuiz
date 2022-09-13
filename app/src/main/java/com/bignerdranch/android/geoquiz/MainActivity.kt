@@ -17,6 +17,7 @@ import androidx.lifecycle.ViewModelProvider
 
 
 private const val KEY_INDEX = "index"
+private const val KEY_CHEATER = "cheater"
 private const val REQUEST_CODE_CHEAT = 0
 
 class MainActivity : AppCompatActivity() {
@@ -41,15 +42,15 @@ class MainActivity : AppCompatActivity() {
         var resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
                 val data: Intent? = result.data
-                if (result.resultCode == Activity.RESULT_OK) {
-                    quizViewModel.isCheater =
-                        data?.getBooleanExtra(EXTRA_ANSWER_SHOWN, false) ?: false
-                }
+                quizViewModel.isCheater[quizViewModel.getIndex] = data?.getBooleanExtra(EXTRA_ANSWER_SHOWN, false) == true
             }
         }
 
         val currentIndex = savedInstanceState?.get(KEY_INDEX) ?: 0
         quizViewModel.setCurrentIndex(currentIndex as Int)
+
+//        val isCheater = (savedInstanceState?.get(KEY_CHEATER) ?: listOf(false))
+//        quizViewModel.isCheater = isCheater
 
         trueButton = findViewById(R.id.true_button)
         falseButton = findViewById(R.id.false_button)
@@ -99,15 +100,11 @@ class MainActivity : AppCompatActivity() {
         updateQuestion()
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-    }
-
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         Log.i(TAG, "onSaveInstanceState")
         outState.putInt(KEY_INDEX, quizViewModel.getIndex)
+        outState.putBoolean(KEY_CHEATER, quizViewModel.isCheater[quizViewModel.getIndex])
 
     }
 
@@ -133,6 +130,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateAnswerButtons() {
+        Log.d("status", quizViewModel.getIndex.toString())
         if (!quizViewModel.currentButtonStatus) {
             enableAnswerButtons()
         } else {
@@ -174,8 +172,9 @@ class MainActivity : AppCompatActivity() {
         val correctAnswer = quizViewModel.currentQuestionAnswer
 
         if (userAnswer == correctAnswer) quizViewModel.updateQuestionsCorrect()
+        Log.d("status", quizViewModel.isCheater[quizViewModel.getIndex].toString())
         val messageResId = when {
-            quizViewModel.isCheater -> R.string.judgment_toast
+            quizViewModel.isCheater[quizViewModel.getIndex] -> R.string.judgment_toast
             userAnswer == correctAnswer -> R.string.correct_toast
             else -> R.string.incorrect_toast
         }
