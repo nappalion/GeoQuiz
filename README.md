@@ -16,5 +16,5 @@ A project created for CS4750. GeoQuiz tests the user's knowledge of geography. T
 - [x] From Button to ImageButton (page 57)
 - [x] Prevent Repeating Answers (page 76)
 - [x] Graded Quiz (page 76)
-- [ ] Closing Loopholes for Cheaters (134)
-- [ ] Tracking Cheat Status by Question (134)
+- [x] Closing Loopholes for Cheaters (134)
+- [x] Tracking Cheat Status by Question (134)
