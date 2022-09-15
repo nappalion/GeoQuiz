@@ -31,7 +31,7 @@ class CheatActivity : AppCompatActivity() {
         showAnswerButton = findViewById(R.id.show_answer_button)
         apiLevelTextView = findViewById(R.id.api_level_text_view)
 
-        apiLevelTextView.text = "API Level ${Build.VERSION.SDK_INT.toString()}"
+        apiLevelTextView.text = "API Level ${Build.VERSION.SDK_INT}"
 
         showAnswerButton.setOnClickListener {
             val answerText = when {
